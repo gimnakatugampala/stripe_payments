@@ -13,14 +13,24 @@ $POST = filter_var_array($_POST,FILTER_SANITIZE_STRING);
 $first_name = $POST['first_name'];
 $last_name = $POST['last_name'];
 $email = $POST['email'];
-$token = $POST['StripeToken'];
-
-// Token is created using Stripe Checkout or Elements!
-// Get the payment token ID submitted by the form:
 $token = $_POST['stripeToken'];
-$charge = \Stripe\Charge::create([
-  'amount' => 999,
-  'currency' => 'usd',
-  'description' => 'Example charge',
-  'source' => $token,
+
+//Create Customer In Stripe
+$customer = \Stripe\Customer::create([
+    'email'=> $email,
+    'source'=>$token
 ]);
+
+//Charge Customer
+
+$charge = \Stripe\Charge::create([
+  'amount' => 5000,
+  'currency' => 'usd',
+  'description' => 'Intro to React Course',
+  'customer' => $customer->id,
+]);
+
+//  print_r($charge);
+
+//Redirect to Success
+header('Location:Success.php?tid='.$charge->id.'&product='.$charge->description);
