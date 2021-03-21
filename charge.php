@@ -1,6 +1,10 @@
 <?php
 
 require_once('vendor/autoload.php');
+require_once('config/db.php');
+require_once('lib/pdo_db.php');
+require_once('models/Customers.php');
+require_once('models/Transactions.php');
 
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/account/apikeys
@@ -29,6 +33,39 @@ $charge = \Stripe\Charge::create([
   'description' => 'Intro to React Course',
   'customer' => $customer->id,
 ]);
+
+//Customer Data
+$customerData = [
+  'id'=> $charge->customer,
+  'first_name'=> $first_name,
+  'last_name'=> $last_name,
+  'email'=> $email
+];
+
+//Init Customer
+$customer = new Customer();
+
+//Add Cutomer to DB
+$customer->addCustomer($customerData);
+
+
+//Transaction Data
+$transactionData = [
+  'id'=> $charge->id,
+  'customer_id'=> $charge->customer,
+  'product'=> $charge->description,
+  'amount'=> $charge->amount,
+  'currency'=>$charge->currency,
+  'status'=>$charge->status
+];
+
+//Init Transactiton
+$transations = new Transactions();
+
+//Add Cutomer to DB
+$transations->addTransactions($transactionData);
+
+
 
 //  print_r($charge);
 
